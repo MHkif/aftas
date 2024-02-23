@@ -3,18 +3,19 @@ package yc.mhkif.aftas.controllers;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import yc.mhkif.aftas.dtos.requests.CompetitionRequest;
-import yc.mhkif.aftas.dtos.responses.CompetitionResponse;
-import yc.mhkif.aftas.entities.Member;
+import yc.mhkif.aftas.dto.HttpRes;
+import yc.mhkif.aftas.dto.requests.CompetitionRequest;
+import yc.mhkif.aftas.dto.responses.CompetitionResponse;
 import yc.mhkif.aftas.services.ICompetitionService;
 
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.Map;
 
 @RestController
 @RequestMapping("aftas/api/v1/")
-@CrossOrigin("*")
 public class CompetitionController {
 
     private final ICompetitionService service;
@@ -25,19 +26,52 @@ public class CompetitionController {
     }
 
     @GetMapping("competitions")
-    public ResponseEntity<Page<CompetitionResponse>> getCompetitions(@RequestParam int page, @RequestParam int size){
-        return service.getAll(page,size);
+    public ResponseEntity<HttpRes> getCompetitions(@RequestParam int page, @RequestParam int size){
+        Page<CompetitionResponse> competitions = service.getAll(page,size);
+        return ResponseEntity.accepted().body(
+                HttpRes.builder()
+                        .timeStamp(LocalDateTime.now().toString())
+                        .statusCode(HttpStatus.ACCEPTED.value())
+                        .path("aftas/api/v1/competitions/")
+                        .status(HttpStatus.ACCEPTED)
+                        .message("competitions has been retrieved successfully")
+                        .developerMessage("competitions has been retrieved successfully")
+                        .data(Map.of("response", competitions))
+                        .build()
+        );
     }
 
 
 
     @GetMapping("competitions/{code}")
-    public ResponseEntity<CompetitionResponse> getCompetition(@PathVariable String code){
-        return service.getById(code);
+    public ResponseEntity<HttpRes> getCompetition(@PathVariable String code){
+        CompetitionResponse competition = service.getById(code);
+        return ResponseEntity.accepted().body(
+                HttpRes.builder()
+                        .timeStamp(LocalDateTime.now().toString())
+                        .statusCode(HttpStatus.ACCEPTED.value())
+                        .path("aftas/api/v1/competitions/")
+                        .status(HttpStatus.ACCEPTED)
+                        .message("competition has been retrieved successfully")
+                        .developerMessage("competition has been retrieved successfully")
+                        .data(Map.of("response", competition))
+                        .build()
+        );
     }
 
     @PostMapping("competitions")
-    public ResponseEntity<CompetitionResponse> createCompetition(@Valid @RequestBody CompetitionRequest request){
-        return service.create(request);
+    public ResponseEntity<HttpRes> createCompetition(@Valid @RequestBody CompetitionRequest request){
+        CompetitionResponse competition= service.create(request);
+        return ResponseEntity.accepted().body(
+                HttpRes.builder()
+                        .timeStamp(LocalDateTime.now().toString())
+                        .statusCode(HttpStatus.CREATED.value())
+                        .path("aftas/api/v1/competitions/")
+                        .status(HttpStatus.CREATED)
+                        .message("competition has been created successfully")
+                        .developerMessage("competition has been created successfully")
+                        .data(Map.of("response", competition))
+                        .build()
+        );
     }
 }

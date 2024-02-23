@@ -3,22 +3,22 @@ package yc.mhkif.aftas.controllers;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import yc.mhkif.aftas.dtos.requests.CompetitionRequest;
-import yc.mhkif.aftas.dtos.requests.RankingRequest;
-import yc.mhkif.aftas.dtos.responses.CompetitionResponse;
-import yc.mhkif.aftas.dtos.responses.RankingResponse;
-import yc.mhkif.aftas.entities.Competition;
+import yc.mhkif.aftas.dto.HttpRes;
+import yc.mhkif.aftas.dto.requests.RankingRequest;
+import yc.mhkif.aftas.dto.responses.RankingResponse;
 import yc.mhkif.aftas.entities.Ranking;
-import yc.mhkif.aftas.entities.implementations.CompetitionMember;
+import yc.mhkif.aftas.entities.implementations.CompetitionUser;
 import yc.mhkif.aftas.services.IRankingService;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @RestController
-@RequestMapping("aftas/api/v1/")
-@CrossOrigin("*")
+@RequestMapping("aftas/api/v1/rankings")
 public class RankingController {
 
     private final IRankingService service;
@@ -28,31 +28,86 @@ public class RankingController {
         this.service = service;
     }
 
-    @GetMapping("rankings/search")
-    public ResponseEntity<RankingResponse> getRanking(@RequestParam Integer member, @RequestParam String competition){
-        CompetitionMember id = new CompetitionMember();
-        id.setMemberId(member);
+    @GetMapping("search")
+    public ResponseEntity<HttpRes> getRanking(@RequestParam Integer member, @RequestParam String competition){
+        CompetitionUser id = new CompetitionUser();
+        id.setUserId(member);
         id.setCompetitionCode(competition);
-        return this.service.getById(id);
+        RankingResponse rankingResponse = this.service.getById(id);
+        return ResponseEntity.accepted().body(
+                HttpRes.builder()
+                        .timeStamp(LocalDateTime.now().toString())
+                        .statusCode(HttpStatus.ACCEPTED.value())
+                        .path("aftas/api/v1/rankings/search")
+                        .status(HttpStatus.ACCEPTED)
+                        .message("ranking has been retrieved successfully")
+                        .developerMessage("ranking has been retrieved successfully")
+                        .data(Map.of("response", rankingResponse))
+                        .build()
+        );
     }
-    @GetMapping("rankings/competition/{code}")
-    public ResponseEntity<List<RankingResponse>> getRankingsByCompetition(@PathVariable String code){
-        return this.service.getByCompetition(code);
+    @GetMapping("competitions/{code}")
+    public ResponseEntity<HttpRes> getRankingsByCompetition(@PathVariable String code){
+        List<RankingResponse> rankingList  = this.service.getByCompetition(code);
+        return ResponseEntity.accepted().body(
+                HttpRes.builder()
+                        .timeStamp(LocalDateTime.now().toString())
+                        .statusCode(HttpStatus.ACCEPTED.value())
+                        .path("aftas/api/v1/rankings/competitions/")
+                        .status(HttpStatus.ACCEPTED)
+                        .message("ranking list has been retrieved successfully")
+                        .developerMessage("ranking list has been retrieved successfully")
+                        .data(Map.of("response", rankingList))
+                        .build()
+        );
     }
 
 
-    @GetMapping("rankings")
-    public  ResponseEntity<Page<RankingResponse>> getRankings(@RequestParam int page, @RequestParam int size){
-        return this.service.getAll(page, size);
+    @GetMapping("")
+    public  ResponseEntity<HttpRes> getRankings(@RequestParam int page, @RequestParam int size){
+        Page<RankingResponse> rankingPage  = this.service.getAll(page, size);
+        return ResponseEntity.accepted().body(
+                HttpRes.builder()
+                        .timeStamp(LocalDateTime.now().toString())
+                        .statusCode(HttpStatus.ACCEPTED.value())
+                        .path("aftas/api/v1/rankings")
+                        .status(HttpStatus.ACCEPTED)
+                        .message("ranking page has been retrieved successfully")
+                        .developerMessage("ranking page has been retrieved successfully")
+                        .data(Map.of("response", rankingPage))
+                        .build()
+        );
     }
 
-    @GetMapping("rankings/podium/{competitionId}")
-    public  ResponseEntity<List<Ranking>> getPodium(@PathVariable String competitionId ){
-        return this.service.getPodium(competitionId);
+    @GetMapping("podium/{competitionId}")
+    public  ResponseEntity<HttpRes> getPodium(@PathVariable String competitionId ){
+        List<Ranking> podium = this.service.getPodium(competitionId);
+        return ResponseEntity.accepted().body(
+                HttpRes.builder()
+                        .timeStamp(LocalDateTime.now().toString())
+                        .statusCode(HttpStatus.ACCEPTED.value())
+                        .path("aftas/api/v1/rankings")
+                        .status(HttpStatus.ACCEPTED)
+                        .message("podium has been retrieved successfully")
+                        .developerMessage("podium has been retrieved successfully")
+                        .data(Map.of("response", podium))
+                        .build()
+        );
     }
 
-    @PostMapping("rankings")
-    public ResponseEntity<RankingResponse> createRanking(@Valid @RequestBody RankingRequest request){
-        return service.create(request);
+    @PostMapping("")
+    public ResponseEntity<HttpRes> createRanking(@Valid @RequestBody RankingRequest request){
+        RankingResponse response= service.create(request);
+        return ResponseEntity.accepted().body(
+                HttpRes.builder()
+                        .timeStamp(LocalDateTime.now().toString())
+                        .statusCode(HttpStatus.CREATED.value())
+                        .path("aftas/api/v1/rankings")
+                        .status(HttpStatus.CREATED)
+                        .message("ranking has been created successfully")
+                        .developerMessage("ranking has been created successfully")
+                        .data(Map.of("response", response))
+                        .build()
+        );
     }
 }

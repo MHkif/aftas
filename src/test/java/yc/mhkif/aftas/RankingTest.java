@@ -7,20 +7,17 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import yc.mhkif.aftas.entities.Hunting;
-import yc.mhkif.aftas.entities.Ranking;
-import yc.mhkif.aftas.entities.implementations.CompetitionMember;
-import yc.mhkif.aftas.repositories.IHuntingRepository;
-import yc.mhkif.aftas.repositories.IRankingRepository;
+import yc.mhkif.aftas.repositories.HuntingRepository;
+import yc.mhkif.aftas.repositories.RankingRepository;
 
 
 @ExtendWith(MockitoExtension.class)
 class HuntingServiceImplTest {
 
     @Mock
-    private IHuntingRepository huntingRepository ;
+    private HuntingRepository huntingRepository ;
     @Mock
-    IRankingRepository rankingRepository;
+    RankingRepository rankingRepository;
 
     @BeforeEach
     void setUp() {

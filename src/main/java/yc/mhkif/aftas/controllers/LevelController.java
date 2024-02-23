@@ -3,19 +3,21 @@ package yc.mhkif.aftas.controllers;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import yc.mhkif.aftas.dtos.requests.LevelRequest;
-import yc.mhkif.aftas.dtos.requests.MemberRequest;
-import yc.mhkif.aftas.dtos.responses.LevelResponse;
-import yc.mhkif.aftas.dtos.responses.MemberResponse;
+import yc.mhkif.aftas.dto.HttpRes;
+import yc.mhkif.aftas.dto.requests.LevelRequest;
+import yc.mhkif.aftas.dto.responses.LevelResponse;
+import yc.mhkif.aftas.dto.responses.MemberResponse;
 import yc.mhkif.aftas.services.ILevelService;
-import yc.mhkif.aftas.services.IMemberService;
+
+import java.time.LocalDateTime;
+import java.util.Map;
 
 
 @RestController
 @RequestMapping("aftas/api/v1/")
-@CrossOrigin("*")
 public class LevelController {
     private final ILevelService service;
 
@@ -26,18 +28,53 @@ public class LevelController {
 
 
     @GetMapping("levels")
-    public ResponseEntity<Page<LevelResponse>> getLevels(@RequestParam int page, @RequestParam int size){
-        return service.getAll(page,size);
+    public ResponseEntity<HttpRes> getLevels(@RequestParam int page, @RequestParam int size){
+        Page<LevelResponse> levels =  service.getAll(page,size);
+        return ResponseEntity.accepted().body(
+                HttpRes.builder()
+                        .timeStamp(LocalDateTime.now().toString())
+                        .statusCode(HttpStatus.ACCEPTED.value())
+                        .path("aftas/api/v1/levels/")
+                        .status(HttpStatus.ACCEPTED)
+                        .message("Levels has been retrieved successfully")
+                        .developerMessage("Levels has been retrieved successfully")
+                        .data(Map.of("response", levels))
+                        .build()
+        );
     }
 
     @GetMapping("levels/{code}")
-    public ResponseEntity<LevelResponse> getLevel(@PathVariable int code){
-        return service.getById(code);
+    public ResponseEntity<HttpRes> getLevel(@PathVariable int code){
+
+        LevelResponse level =  service.getById(code);
+        return ResponseEntity.accepted().body(
+                HttpRes.builder()
+                        .timeStamp(LocalDateTime.now().toString())
+                        .statusCode(HttpStatus.ACCEPTED.value())
+                        .path("aftas/api/v1/levels/")
+                        .status(HttpStatus.ACCEPTED)
+                        .message("Level has been retrieved successfully")
+                        .developerMessage("Level has been retrieved successfully")
+                        .data(Map.of("response", level))
+                        .build()
+        );
+
     }
 
 
-    @PostMapping("levels/save")
-    public ResponseEntity<LevelResponse> createLevel(@Valid @RequestBody LevelRequest request){
-        return service.create(request);
+    @PostMapping("levels")
+    public ResponseEntity<HttpRes> createLevel(@Valid @RequestBody LevelRequest request){
+        LevelResponse level = service.create(request);
+        return ResponseEntity.accepted().body(
+                HttpRes.builder()
+                        .timeStamp(LocalDateTime.now().toString())
+                        .statusCode(HttpStatus.CREATED.value())
+                        .path("aftas/api/v1/levels/")
+                        .status(HttpStatus.CREATED)
+                        .message("Level has been created successfully")
+                        .developerMessage("Level has been created successfully")
+                        .data(Map.of("response", level))
+                        .build()
+        );
     }
 }

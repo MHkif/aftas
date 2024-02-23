@@ -1,14 +1,11 @@
 package yc.mhkif.aftas.services;
 
-import org.springframework.http.ResponseEntity;
-import yc.mhkif.aftas.dtos.requests.MemberRequest;
-import yc.mhkif.aftas.dtos.responses.MemberResponse;
-import yc.mhkif.aftas.entities.Member;
+import yc.mhkif.aftas.dto.requests.MemberRequest;
+import yc.mhkif.aftas.dto.responses.MemberResponse;
+import yc.mhkif.aftas.entities.User;
 
-import java.util.List;
-import java.util.Optional;
+public interface IMemberService extends IService<User, Integer, MemberRequest, MemberResponse>{
+    MemberResponse checkExistence(String identity);
 
-public interface IMemberService extends IService<Member, Integer, MemberRequest, MemberResponse>{
-
-    ResponseEntity<MemberResponse> checkExistence(String identity);
+    User auth(String email, String password);
 }

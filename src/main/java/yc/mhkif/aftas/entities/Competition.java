@@ -5,10 +5,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 import yc.mhkif.aftas.enums.CompetitionStatus;
-import yc.mhkif.aftas.enums.IdentityDocumentType;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,9 +33,9 @@ public class Competition {
     @ManyToMany
     @JoinTable(name = "Ranking",
             joinColumns = @JoinColumn(name = "competition_code"),
-            inverseJoinColumns = @JoinColumn(name = "member_num"))
+            inverseJoinColumns = @JoinColumn(name = "user_num"))
     @JsonIgnore
-    private Collection<Member> members = new ArrayList<>();
+    private Collection<User> users = new ArrayList<>();
 
     @OneToMany(mappedBy = "competition", cascade = CascadeType.ALL)
     @JsonIgnore
@@ -45,7 +43,7 @@ public class Competition {
 
 
     public int getNumberOfParticipants() {
-       return Objects.nonNull(members) ? members.size() : 0;
+       return Objects.nonNull(users) ? users.size() : 0;
     }
 
 }

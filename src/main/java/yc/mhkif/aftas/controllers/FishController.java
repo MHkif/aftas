@@ -3,18 +3,20 @@ package yc.mhkif.aftas.controllers;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import yc.mhkif.aftas.dtos.FishesLevelResponse;
-import yc.mhkif.aftas.dtos.requests.FishRequest;
-import yc.mhkif.aftas.dtos.responses.FishResponse;
+import yc.mhkif.aftas.dto.FishesLevelResponse;
+import yc.mhkif.aftas.dto.HttpRes;
+import yc.mhkif.aftas.dto.requests.FishRequest;
+import yc.mhkif.aftas.dto.responses.FishResponse;
 import yc.mhkif.aftas.services.IFishService;
 
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.Map;
 
 @RestController
 @RequestMapping("aftas/api/v1/")
-@CrossOrigin("*")
 public class FishController {
 
     private final IFishService service;
@@ -26,27 +28,71 @@ public class FishController {
 
 
     @GetMapping("fishes")
-    public ResponseEntity<Page<FishResponse>> getFishes(@RequestParam int page, @RequestParam int size){
-        return service.getAll(page,size);
+    public ResponseEntity<HttpRes> getFishes(@RequestParam int page, @RequestParam int size){
+        Page<FishResponse> fishes =  service.getAll(page,size);
+        return ResponseEntity.accepted().body(
+                HttpRes.builder()
+                        .timeStamp(LocalDateTime.now().toString())
+                        .statusCode(HttpStatus.ACCEPTED.value())
+                        .path("aftas/api/v1/fishes/")
+                        .status(HttpStatus.ACCEPTED)
+                        .message("fishes has been retrieved successfully")
+                        .developerMessage("fishes has been retrieved successfully")
+                        .data(Map.of("response", fishes))
+                        .build()
+        );
     }
 
     @GetMapping("fishes/levels")
-    public ResponseEntity<Page<FishesLevelResponse>> getFishesByLevel(@RequestParam int page, @RequestParam int size){
-        return service.getFishesByLevel(page,size);
+    public ResponseEntity<HttpRes> getFishesByLevel(@RequestParam int page, @RequestParam int size){
+        Page<FishesLevelResponse> fishesLevel =  service.getFishesByLevel(page,size);
+        return ResponseEntity.accepted().body(
+                HttpRes.builder()
+                        .timeStamp(LocalDateTime.now().toString())
+                        .statusCode(HttpStatus.ACCEPTED.value())
+                        .path("aftas/api/v1/fishes/")
+                        .status(HttpStatus.ACCEPTED)
+                        .message("fishes by level has been retrieved successfully")
+                        .developerMessage("fishes by level has been retrieved successfully")
+                        .data(Map.of("response", fishesLevel))
+                        .build()
+        );
     }
 
 
 
     @GetMapping("fishes/{name}")
-    public ResponseEntity<FishResponse> getFish(@PathVariable String name){
-        return service.getById(name);
+    public ResponseEntity<HttpRes> getFish(@PathVariable String name){
+        FishResponse fish = service.getById(name);
+        return ResponseEntity.accepted().body(
+                HttpRes.builder()
+                        .timeStamp(LocalDateTime.now().toString())
+                        .statusCode(HttpStatus.ACCEPTED.value())
+                        .path("aftas/api/v1/fishes/")
+                        .status(HttpStatus.ACCEPTED)
+                        .message("fish has been retrieved successfully")
+                        .developerMessage("fish has been retrieved successfully")
+                        .data(Map.of("response", fish))
+                        .build()
+        );
     }
 
 
 
 
     @PostMapping("fishes")
-    public ResponseEntity<FishResponse> createFish(@Valid @RequestBody FishRequest request){
-        return service.create(request);
+    public ResponseEntity<HttpRes> createFish(@Valid @RequestBody FishRequest request){
+        FishResponse fish = service.create(request);
+        return ResponseEntity.accepted().body(
+                HttpRes.builder()
+                        .timeStamp(LocalDateTime.now().toString())
+                        .statusCode(HttpStatus.CREATED.value())
+                        .path("aftas/api/v1/fishes/")
+                        .status(HttpStatus.CREATED)
+                        .message("fish has been created successfully")
+                        .developerMessage("fish has been created successfully")
+                        .data(Map.of("response", fish))
+                        .build()
+        );
     }
 }
