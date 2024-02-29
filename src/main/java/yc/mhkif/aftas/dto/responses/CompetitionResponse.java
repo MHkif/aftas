@@ -1,5 +1,6 @@
 package yc.mhkif.aftas.dto.responses;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,16 +21,16 @@ import java.util.Collection;
 public class CompetitionResponse {
 
     private String code;
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "dd-MM-yyyy")
     private LocalDate date;
-    @DateTimeFormat(pattern = "HH:mm")
+    @JsonFormat(pattern = "HH:mm")
     private LocalTime startTime;
-    @DateTimeFormat(pattern = "HH:mm")
+    @JsonFormat(pattern = "HH:mm")
     private LocalTime endTime;
     private int numberOfParticipants ;
     private String location;
     private Double amount;
     private CompetitionStatus status;
-    private Collection<User> users = new ArrayList<>();
+    private Collection<User> members = new ArrayList<>();
 
 }

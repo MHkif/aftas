@@ -11,12 +11,10 @@ import java.util.Collection;
 public class Level {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "level_seq_generator")
-    @SequenceGenerator(name = "level_seq_generator", sequenceName = "level_sequence", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer code;
     @Column(unique = true)
     private String description;
     private Integer points;
-    @OneToMany(mappedBy = "level", cascade = CascadeType.ALL)
-    private Collection<Fish> fish = new ArrayList<>();
+
 }

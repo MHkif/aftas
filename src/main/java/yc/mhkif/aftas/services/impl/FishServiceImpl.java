@@ -60,7 +60,9 @@ public class FishServiceImpl implements IFishService {
         List<Level> paginatedLevels = allLevels.subList(start, end);
 
 
-        return new PageImpl<>(paginatedLevels, pageRequest, allLevels.size())
+        return null;
+                /*
+                new PageImpl<>(paginatedLevels, pageRequest, allLevels.size())
                 .map(level -> FishesLevelResponse.builder()
                         .level(level)
                         .fishResponses(level.getFish().stream()
@@ -70,6 +72,8 @@ public class FishServiceImpl implements IFishService {
                                 .collect(Collectors.toList()))
                         .build());
 
+
+                 */
 
     }
 

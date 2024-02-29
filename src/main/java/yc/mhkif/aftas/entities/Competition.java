@@ -2,6 +2,7 @@ package yc.mhkif.aftas.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 import yc.mhkif.aftas.enums.CompetitionStatus;
@@ -18,6 +19,7 @@ public class Competition {
     @Id
     private String code;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
+
     private LocalDate date;
     @DateTimeFormat(pattern = "HH:mm")
     private LocalTime startTime;
@@ -35,7 +37,7 @@ public class Competition {
             joinColumns = @JoinColumn(name = "competition_code"),
             inverseJoinColumns = @JoinColumn(name = "user_num"))
     @JsonIgnore
-    private Collection<User> users = new ArrayList<>();
+    private Collection<User> members = new ArrayList<>();
 
     @OneToMany(mappedBy = "competition", cascade = CascadeType.ALL)
     @JsonIgnore
@@ -43,7 +45,7 @@ public class Competition {
 
 
     public int getNumberOfParticipants() {
-       return Objects.nonNull(users) ? users.size() : 0;
+       return Objects.nonNull(members) ? members.size() : 0;
     }
 
 }

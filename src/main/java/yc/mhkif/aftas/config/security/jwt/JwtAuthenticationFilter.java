@@ -29,6 +29,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
             throws ServletException, IOException {
+        if(request.getServletPath().contains("aftas/api/v1/auth")){
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String header = request.getHeader("Authorization");
         final String token;
         final String userEmail;
@@ -36,6 +41,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
+
         token = header.replace("Bearer ", "");
         jwtService.setToken(token);
         userEmail = jwtService.extractUserName(token);
@@ -52,6 +58,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
         }
+
         filterChain.doFilter(request, response);
     }
 

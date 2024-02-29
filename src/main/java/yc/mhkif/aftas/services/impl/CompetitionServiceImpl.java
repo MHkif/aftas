@@ -10,12 +10,17 @@ import org.springframework.stereotype.Service;
 import yc.mhkif.aftas.dto.requests.CompetitionRequest;
 import yc.mhkif.aftas.dto.responses.CompetitionResponse;
 import yc.mhkif.aftas.entities.Competition;
+import yc.mhkif.aftas.exceptions.BadRequestException;
 import yc.mhkif.aftas.exceptions.EntityAlreadyExistsException;
 import yc.mhkif.aftas.exceptions.NotFoundException;
 import yc.mhkif.aftas.repositories.CompetitionRepository;
 import yc.mhkif.aftas.repositories.UserRepository;
 import yc.mhkif.aftas.services.ICompetitionService;
 
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 
@@ -27,10 +32,9 @@ public class CompetitionServiceImpl implements ICompetitionService {
     private final ModelMapper mapper;
 
 
-
     @Override
     public CompetitionResponse getById(String code) {
-        Optional<Competition> optionalCompetition= repository.findById(code);
+        Optional<Competition> optionalCompetition = repository.findById(code);
         if (optionalCompetition.isPresent()) {
             return mapper.map(optionalCompetition.get(), CompetitionResponse.class);
         } else {
@@ -49,11 +53,19 @@ public class CompetitionServiceImpl implements ICompetitionService {
 
     @Override
     public CompetitionResponse create(CompetitionRequest request) {
-        if (repository.existsById(request.getCode())) {
+        var code = generateCode(request.getLocation(), request.getDate());
+        if (repository.existsById(code)) {
             throw new EntityAlreadyExistsException("Competition already exists with the given Code.");
         }
+        boolean isValidTime = validateCompetitionTime(request.getStartTime(), request.getEndTime());
 
-        Competition savedCompetition = repository.save(mapper.map(request, Competition.class));
+        if (!isValidTime) {
+            throw new BadRequestException("End Time must be higher than Start time at least by one Hour .");
+        }
+
+        Competition competition = mapper.map(request, Competition.class);
+        competition.setCode(code);
+        Competition savedCompetition = repository.save(competition);
         return mapper.map(savedCompetition, CompetitionResponse.class);
     }
 
@@ -62,4 +74,17 @@ public class CompetitionServiceImpl implements ICompetitionService {
         return null;
     }
 
+    public String generateCode(String location, LocalDate date) {
+        String formattedDate = date.format(DateTimeFormatter.ofPattern("dd-MM-yy"));
+        location = location.substring(0, Math.min(location.length(), 3)).toLowerCase();
+        return location + "-" + formattedDate;
+    }
+
+    private boolean validateCompetitionTime(LocalTime start, LocalTime end) {
+        LocalTime startTime = LocalTime.of(start.getHour(), start.getMinute());
+        LocalTime endTime = LocalTime.of(end.getHour(), end.getMinute());
+        Duration duration = Duration.between(startTime, endTime);
+        return duration.toHours() >= 1;
+
+    }
 }

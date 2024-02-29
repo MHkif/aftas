@@ -11,18 +11,18 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 @Data
-public class MemberResponse {
+public class UserResponse {
     private int num;
     private String first_name ;
     private String last_name;
     private String email;
     private String password;
-    //@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "UTC")
     private LocalDateTime accessionDate;
     private String nationality;
     private Role role;
     private IdentityDocumentType identityDocument;
     private String identityNumber;
+    private boolean isActivate;
     private Collection<Competition> competitions = new ArrayList<>();
 }

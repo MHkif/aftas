@@ -3,17 +3,17 @@ package yc.mhkif.aftas.controllers;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import yc.mhkif.aftas.config.security.authenticators.AuthenticatedUser;
 import yc.mhkif.aftas.config.security.jwt.JwtService;
 import yc.mhkif.aftas.dto.HttpRes;
 import yc.mhkif.aftas.dto.requests.AuthReq;
-import yc.mhkif.aftas.dto.requests.MemberRequest;
-import yc.mhkif.aftas.dto.responses.MemberResponse;
+import yc.mhkif.aftas.dto.requests.UserRequest;
+import yc.mhkif.aftas.dto.responses.UserResponse;
 import yc.mhkif.aftas.entities.User;
 import yc.mhkif.aftas.services.IMemberService;
 
@@ -33,7 +33,7 @@ public class MemberController {
     @GetMapping("")
     public ResponseEntity<HttpRes> getMembers(@RequestParam int page, @RequestParam int size){
 
-        Page<MemberResponse> members =  memberService.getAll(page,size);
+        Page<UserResponse> members =  memberService.getAll(page,size);
         return ResponseEntity.accepted().body(
                 HttpRes.builder()
                         .timeStamp(LocalDateTime.now().toString())
@@ -49,7 +49,7 @@ public class MemberController {
 
     @GetMapping("{num}")
     public ResponseEntity<HttpRes> getMember(@PathVariable int num){
-        MemberResponse member =  memberService.getById(num);
+        UserResponse member =  memberService.getById(num);
         return ResponseEntity.accepted().body(
                 HttpRes.builder()
                         .timeStamp(LocalDateTime.now().toString())
@@ -64,43 +64,10 @@ public class MemberController {
     }
 
 
-    @PostMapping("")
-    public ResponseEntity<HttpRes> createMember(@Valid @RequestBody MemberRequest request){
-        MemberResponse member = memberService.create(request);
-        return ResponseEntity.accepted().body(
-                HttpRes.builder()
-                        .timeStamp(LocalDateTime.now().toString())
-                        .statusCode(HttpStatus.CREATED.value())
-                        .path("aftas/api/v1/members/")
-                        .status(HttpStatus.CREATED)
-                        .message("User has been created successfully")
-                        .developerMessage("User has been created successfully")
-                        .data(Map.of("response", member))
-                        .build()
-        );
-    }
-    @PostMapping("/auth")
-    public ResponseEntity<HttpRes> auth(@Valid @RequestBody AuthReq auth){
-        User user = memberService.auth(auth.getEmail(), auth.getPassword());
-        AuthenticatedUser authenticatedEntity = new AuthenticatedUser(user);
 
-        var token = jwtService.generateToken(authenticatedEntity);
-        return ResponseEntity.accepted().body(
-                HttpRes.builder()
-                        .timeStamp(LocalDateTime.now().toString())
-                        .statusCode(HttpStatus.ACCEPTED.value())
-                        .path("myrh/api/v1/members")
-                        .status(HttpStatus.ACCEPTED)
-                        .message(user.getRole()+" has been authenticated")
-                        .developerMessage(user.getRole()+" has been authenticated")
-                        .data(Map.of("response", mapper.map(user, MemberResponse.class), "token", token))
-                        .build()
-        );
-    }
-
-    @GetMapping("members/checkExistence")
+    @GetMapping("checkExistence")
     public ResponseEntity<HttpRes> checkMember(@Valid @RequestParam String identity){
-        MemberResponse member = memberService.checkExistence(identity);
+        UserResponse member = memberService.checkExistenceByIdentity(identity);
         return ResponseEntity.accepted().body(
                 HttpRes.builder()
                         .timeStamp(LocalDateTime.now().toString())
@@ -112,5 +79,22 @@ public class MemberController {
                         .data(Map.of("response", member))
                         .build()
         );
+    }
+
+    @GetMapping("account-activation/{identity}")
+    public ResponseEntity<HttpRes> activateAccount(@PathVariable String identity) {
+        boolean isActivated = memberService.activateAccount(identity);
+
+        HttpRes response = HttpRes.builder()
+                .timeStamp(LocalDateTime.now().toString())
+                .statusCode(HttpStatus.ACCEPTED.value())
+                .path("aftas/api/v1/members/")
+                .status(HttpStatus.ACCEPTED)
+                .message("User account has been activated successfully")
+                .developerMessage("User account has been activated successfully")
+                .data(Map.of("response", isActivated))
+                .build();
+
+        return ResponseEntity.accepted().body(response);
     }
 }

@@ -17,9 +17,7 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CompetitionRequest {
-    @NotBlank(message = "Competition Code is Required")
-    @Size(min = 5, max = 20, message = "Competition Code  must be between 5 and 20 characters")
-    private String code;
+
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @NotNull(message = "Competition Date is Required")

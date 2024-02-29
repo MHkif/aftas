@@ -7,4 +7,6 @@ import java.util.Optional;
 
 public interface LevelRepository extends JpaRepository<Level, Integer> {
     Optional<Level> findByDescription(String description);
+
+    Optional<Level> findByCode(int i);
 }

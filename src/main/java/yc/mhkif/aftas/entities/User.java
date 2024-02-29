@@ -18,6 +18,7 @@ public class User {
     private int num;
     private String first_name ;
     private String last_name;
+    @Column(unique = true)
     private String email;
     private String password;
     private LocalDateTime accessionDate;
@@ -27,8 +28,10 @@ public class User {
     @Enumerated(EnumType.STRING)
     private IdentityDocumentType identityDocument;
 
+
     @Column(unique = true)
     private String identityNumber;
+    private boolean isActivate;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "Ranking",

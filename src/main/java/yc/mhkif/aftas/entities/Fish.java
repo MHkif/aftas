@@ -13,11 +13,8 @@ public class Fish {
     @Id
     private String name;
     private Double averageWeight;
-    @OneToMany(mappedBy = "fish", cascade = CascadeType.ALL)
-    private Collection<Hunting> hunting = new ArrayList<>();
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "level_id")
-    @JsonIgnore
     private Level level;
 }

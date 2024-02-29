@@ -20,6 +20,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import yc.mhkif.aftas.config.security.jwt.JwtAuthenticationFilter;
+import yc.mhkif.aftas.enums.Role;
 
 import java.util.Arrays;
 import java.util.List;
@@ -38,15 +39,24 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         (authorize) -> authorize
                                 .requestMatchers(
-                                        "aftas/api/v1/auth/*",
-                                        "aftas/api/v1/members/auth",
-                                        "aftas/api/v1/manager/auth",
-                                        "aftas/api/v1/competitions",
-                                        "aftas/api/v1/jury/auth"
+                                        "aftas/api/v1/auth/login",
+                                        "aftas/api/v1/auth/register"
+
                                 ).permitAll()
-                                .requestMatchers("aftas/api/v1/members/**").hasRole("MEMBER")
-                                .requestMatchers("aftas/api/v1/manager/**").hasRole("MANAGER")
-                                .requestMatchers("aftas/api/v1/jury/**").hasAuthority("JURY")
+                                .requestMatchers("aftas/api/v1/members").hasAnyRole(Role.MANAGER.name(), Role.JURY.name())
+                                .requestMatchers(
+                                        "aftas/api/v1/levels/*",
+                                        "aftas/api/v1/levels",
+                                        "aftas/api/v1/fishes",
+                                        "aftas/api/v1/fishes/*"
+                                ).hasRole(Role.MANAGER.name())
+                                .requestMatchers(
+                                        "aftas/api/v1/competitions",
+                                        "aftas/api/v1/competitions/*",
+                                        "aftas/api/v1/rankings/**",
+                                        "aftas/api/v1/rankings"
+                                ).hasAnyRole(Role.MANAGER.name(), Role.JURY.name(), Role.MEMBER.name())
+
                                 .anyRequest().authenticated())
 
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

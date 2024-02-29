@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 @RestController
-@RequestMapping("aftas/api/v1/")
+@RequestMapping("aftas/api/v1/competitions")
 public class CompetitionController {
 
     private final ICompetitionService service;
@@ -25,7 +25,7 @@ public class CompetitionController {
         this.service = service;
     }
 
-    @GetMapping("competitions")
+    @GetMapping("")
     public ResponseEntity<HttpRes> getCompetitions(@RequestParam int page, @RequestParam int size){
         Page<CompetitionResponse> competitions = service.getAll(page,size);
         return ResponseEntity.accepted().body(
@@ -43,7 +43,7 @@ public class CompetitionController {
 
 
 
-    @GetMapping("competitions/{code}")
+    @GetMapping("{code}")
     public ResponseEntity<HttpRes> getCompetition(@PathVariable String code){
         CompetitionResponse competition = service.getById(code);
         return ResponseEntity.accepted().body(
@@ -59,7 +59,7 @@ public class CompetitionController {
         );
     }
 
-    @PostMapping("competitions")
+    @PostMapping("")
     public ResponseEntity<HttpRes> createCompetition(@Valid @RequestBody CompetitionRequest request){
         CompetitionResponse competition= service.create(request);
         return ResponseEntity.accepted().body(

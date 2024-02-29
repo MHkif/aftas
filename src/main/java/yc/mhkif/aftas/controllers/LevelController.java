@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import yc.mhkif.aftas.dto.HttpRes;
 import yc.mhkif.aftas.dto.requests.LevelRequest;
 import yc.mhkif.aftas.dto.responses.LevelResponse;
-import yc.mhkif.aftas.dto.responses.MemberResponse;
 import yc.mhkif.aftas.services.ILevelService;
 
 import java.time.LocalDateTime;
